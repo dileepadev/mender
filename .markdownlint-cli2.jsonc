@@ -1,0 +1,6 @@
+{
+  // Rules live in .markdownlint.json so the VS Code extension and the CLI agree.
+  // This file only scopes which files the CLI walks.
+  "globs": ["**/*.md"],
+  "ignores": [".venv/**", "venv/**", "node_modules/**", ".git/**"]
+}
