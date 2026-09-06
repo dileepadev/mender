@@ -1,0 +1,55 @@
+# mender.yaml — how Mender should treat this repository.
+#
+# A repository without this file is ignored entirely. Presence of the file is
+# the opt-in. Every key below is optional except `test_command`; the values
+# shown are the defaults unless noted.
+#
+# Background reading:
+#   docs/how-it-works.md        the repair loop these settings drive
+#   docs/safety-and-limits.md   why the policy block is enforced in code
+
+version: 1
+
+# Only Python is supported today. See TODO.md, Stage 1, for the adapter
+# interface that adds further languages.
+language: python
+
+# How to run the test suite. Required.
+test_command: uv run pytest
+
+# Optional checks. When set, Mender can classify and repair failures from them.
+lint_command: uv run ruff check .
+type_check_command: uv run mypy
+
+# --- Sandbox --------------------------------------------------------------
+# The ephemeral container used to reproduce a failure. Destroyed after every
+# run, including on crash.
+sandbox:
+  image: python:3.12-slim
+  network: false # keep off unless dependency resolution genuinely needs it
+  timeout_seconds: 600
+  memory_mb: 2048
+  cpus: 2.0
+  flaky_reruns: 5 # re-runs used to decide whether a failure is flaky
+
+# --- Policy ---------------------------------------------------------------
+# Blast radius. The agent proposes; policy disposes.
+policy:
+  max_files_changed: 5
+  max_lines_changed: 120
+  allow_paths:
+    - "src/**"
+    - "tests/**"
+  # Additional paths Mender may never modify in this repository. The built-in
+  # protections (CI workflows, secrets, migrations, this file, policies/) are
+  # always applied on top of whatever is listed here and cannot be removed.
+  never_touch:
+    - "evals/**"
+
+# --- Diagnosis ------------------------------------------------------------
+# Limits on the agent layer. Below the confidence threshold, Mender abstains
+# and opens an issue rather than a pull request.
+diagnose:
+  confidence_threshold: 0.8
+  max_attempts: 3
+  max_cost_usd: 1.0
