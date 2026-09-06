@@ -1,0 +1,163 @@
+[project]
+name = "mender"
+version = "0.0.1"
+description = "CI that fixes itself, and proves the fix."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [{ name = "Dileepa Bandara", email = "contact@dileepa.dev" }]
+keywords = ["ci", "automation", "agents", "testing", "self-healing", "devtools"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Software Development :: Testing",
+]
+dependencies = [
+  "pydantic>=2.9",
+  "pyyaml>=6.0",
+  "typer>=0.15",
+]
+
+[project.optional-dependencies]
+# The model-backed diagnosis agent. Optional: every deterministic path through
+# the repair loop, and the whole test suite, runs without it.
+agent = ["anthropic>=0.40"]
+
+[project.urls]
+Homepage = "https://github.com/dileepadev/mender"
+Repository = "https://github.com/dileepadev/mender"
+Issues = "https://github.com/dileepadev/mender/issues"
+Changelog = "https://github.com/dileepadev/mender/blob/main/CHANGELOG.md"
+
+[project.scripts]
+mender = "mender.cli:app"
+
+[dependency-groups]
+dev = [
+  # Installed for development so the optional agent layer is type-checked and
+  # importable in CI. It stays an optional extra at runtime.
+  "anthropic>=0.40",
+  "mypy>=1.13",
+  "pytest>=8.3",
+  "pytest-cov>=6.0",
+  "ruff>=0.8",
+  "types-pyyaml>=6.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mender"]
+
+# ---------------------------------------------------------------------------
+# Ruff — linting and formatting
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+# The eval corpus is a set of deliberately broken repositories. Linting them
+# would defeat their purpose: one of them exists precisely because it has an
+# unused import.
+extend-exclude = ["evals/corpus"]
+
+[tool.ruff.lint]
+select = [
+  "A",    # flake8-builtins
+  "ANN",  # flake8-annotations
+  "B",    # flake8-bugbear
+  "C4",   # flake8-comprehensions
+  "D",    # pydocstyle
+  "E",    # pycodestyle errors
+  "F",    # pyflakes
+  "I",    # isort
+  "N",    # pep8-naming
+  "PTH",  # flake8-use-pathlib
+  "RUF",  # ruff-specific
+  "S",    # flake8-bandit
+  "SIM",  # flake8-simplify
+  "T20",  # flake8-print
+  "UP",   # pyupgrade
+  "W",    # pycodestyle warnings
+]
+ignore = [
+  "D203",  # conflicts with D211 (no blank line before class docstring)
+  "D213",  # conflicts with D212 (multi-line summary on first line)
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+  "S101",    # assert is the point of a test
+  "D103",    # test functions document themselves by name
+  "D107",    # test doubles' constructors are two lines of assignment
+  "S105",    # webhook secrets in fixtures are not credentials
+  "S310",    # the receiver tests drive a real localhost URL on purpose
+  "S603",    # test doubles mirror subprocess signatures
+  "S607",    # `git` from PATH is how a developer runs it too
+  "ANN401",  # stubs must accept whatever the real API accepts
+]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+# ---------------------------------------------------------------------------
+# mypy — strict type checking
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.12"
+files = ["src", "tests"]
+strict = true
+# `tests` is an implicit namespace package so shared doubles can be imported as
+# `tests.helpers`; without this mypy sees tests/helpers.py under two names.
+explicit_package_bases = true
+mypy_path = ["src", "."]
+plugins = ["pydantic.mypy"]
+warn_unreachable = true
+warn_no_return = true
+show_error_codes = true
+pretty = true
+
+[tool.pydantic-mypy]
+init_typed = true
+warn_required_dynamic_aliases = true
+
+# ---------------------------------------------------------------------------
+# pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = [
+  "-ra",
+  "--strict-markers",
+  "--strict-config",
+  "--cov=mender",
+  "--cov-report=term-missing",
+]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+branch = true
+source = ["src/mender"]
+omit = [
+  "src/mender/__main__.py",
+  # Requires the optional `anthropic` extra and a live API key; exercised
+  # through the DiagnosisAgent protocol by tests/diagnose/test_agents.py.
+  "src/mender/diagnose/anthropic_agent.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+]
