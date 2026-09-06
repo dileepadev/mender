@@ -1,0 +1,8 @@
+name: assertion-out-of-scope
+description: >-
+  A test asserts the wrong total after a recent commit. Recognised as an
+  assertion failure and deliberately left alone — logic bugs are out of scope
+  until the loop is proven on the tractable classes.
+failure_class: assertion
+expect: reported
+commit: cccc333

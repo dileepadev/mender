@@ -1,0 +1,7 @@
+name: unused-import
+description: >-
+  A refactor left an import behind. The linter fails; the test suite is green.
+  The failing check is the linter itself, so no new test is authored.
+failure_class: lint
+expect: shipped
+commit: bbbb222

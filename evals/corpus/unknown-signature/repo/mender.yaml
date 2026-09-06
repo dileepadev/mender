@@ -1,0 +1,3 @@
+version: 1
+language: python
+test_command: python -m pytest -q

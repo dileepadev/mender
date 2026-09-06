@@ -1,0 +1,9 @@
+version: 1
+language: python
+test_command: python -m pytest -q
+sandbox:
+  flaky_reruns: 2
+policy:
+  allow_paths:
+    - "app/**"
+    - "tests/**"

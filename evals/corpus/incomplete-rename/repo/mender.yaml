@@ -1,0 +1,11 @@
+version: 1
+language: python
+test_command: python -m pytest -q
+policy:
+  max_files_changed: 5
+  max_lines_changed: 120
+  allow_paths:
+    - "app/**"
+    - "tests/**"
+sandbox:
+  flaky_reruns: 2

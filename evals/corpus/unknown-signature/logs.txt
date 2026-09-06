@@ -1,0 +1,5 @@
+Run make release
+building release artefacts
+xxd: /opt/toolchain/bin/pack returned status 3 while sealing bundle 7
+release aborted after stage 4 of 9
+Error: Process completed with exit code 3.

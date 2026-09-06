@@ -1,0 +1,8 @@
+name: not-reproducible
+description: >-
+  The log shows a broken import, but the failure will not happen again in a
+  clean sandbox. Mender reports it rather than repairing something it could
+  never make happen on purpose.
+failure_class: import_error
+expect: reported
+commit: eeee555

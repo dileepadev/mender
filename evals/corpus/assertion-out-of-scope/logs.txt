@@ -1,0 +1,17 @@
+============================= test session starts ==============================
+collected 1 item
+
+tests/test_discount.py F                                                 [100%]
+
+=================================== FAILURES ===================================
+_____________________________ test_discount_applies ____________________________
+
+    def test_discount_applies():
+>       assert discount(100, 0.1) == 90
+E       assert 89.5 == 90
+E        +  where 89.5 = discount(100, 0.1)
+
+tests/test_discount.py:6: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_discount.py::test_discount_applies - assert 89.5 == 90
+============================== 1 failed in 0.04s ===============================

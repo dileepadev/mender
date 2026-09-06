@@ -1,0 +1,15 @@
+Run ruff check .
+F401 [*] `os` imported but unused
+ --> src/pkg/totals.py:3:8
+  |
+1 | """Totalling helpers."""
+2 |
+3 | import os
+  |        ^^
+4 | from decimal import Decimal
+  |
+help: Remove unused import: `os`
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.
+Error: Process completed with exit code 1.

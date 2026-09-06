@@ -1,0 +1,7 @@
+name: unknown-signature
+description: >-
+  A failure with no recognisable signature. Mender reports what it saw and
+  stops; there is no fallback to guessing.
+failure_class: unknown
+expect: reported
+commit: dddd444

@@ -1,0 +1,10 @@
+============================= test session starts ==============================
+collected 0 items / 1 error
+
+==================================== ERRORS ====================================
+_________________ ERROR collecting tests/test_greeting.py ______________________
+E   ImportError: cannot import name 'greet' from 'app.greeting'
+
+=========================== short test summary info ============================
+ERROR tests/test_greeting.py
+============================== 1 error in 0.09s ================================
