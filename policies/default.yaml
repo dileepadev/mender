@@ -1,0 +1,25 @@
+# The default policy Mender ships with.
+#
+# A repository overrides these in the `policy:` block of its own mender.yaml.
+# The values here are exactly the defaults enforced by `PolicyConfig` in
+# src/mender/config.py — tests/policy/test_default_policy.py asserts the two
+# cannot drift apart.
+#
+# Note what is *not* in this file. The built-in never-touch globs live in code
+# (`BUILTIN_NEVER_TOUCH`), not here, because a policy file that could remove
+# them would be a policy file an agent could edit its way past. A repository may
+# add protections; it can never remove them.
+
+policy:
+  # Blast radius. A one-line import fix has no business editing thirty files.
+  max_files_changed: 5
+  max_lines_changed: 120
+
+  # The only directories a patch may touch at all. Everything else is refused
+  # before the patch reaches a pull request.
+  allow_paths:
+    - "src/**"
+    - "tests/**"
+
+  # Repository-specific additions to the built-in protections. Empty by default.
+  never_touch: []
